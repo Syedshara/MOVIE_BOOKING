@@ -1,9 +1,17 @@
-import React from 'react'
+// src/App.jsx
+import { BrowserRouter } from "react-router-dom";
+import AppContent from "./functions/AppContent";
 
-const App = () => {
+
+
+
+
+function App() {
   return (
-    <div>App</div>
-  )
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
