@@ -41,7 +41,10 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="C:/Users/VISHAL T/Downloads/postgresql-42.7.4 (1).jar"/>
+=======
+>>>>>>> 7186a4c669449a602b7e3afd471961096a711908
 	<classpathentry kind="src" path="target/generated-sources/annotations">
 		<attributes>
 			<attribute name="optional" value="true"/>
