@@ -175,7 +175,7 @@ const SeatSelectionPage = () => {
                         ))}
                     </div>
                 ))}
-                <div className="flex flex-col justify-center items-center">
+                <div className="flex flex-col justify-center items-center mb-20">
                     <span className="text-gray-400">screen</span>
                     <span className="text-gray-500">All eyes this way please!</span>
                 </div>
