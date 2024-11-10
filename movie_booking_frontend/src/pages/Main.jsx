@@ -61,7 +61,7 @@ const Main = () => {
                 transition={{ duration: 0.5 }}
                 viewport={{ once: false }} // Trigger on every scroll into view
             >
-                Latest Movies
+                Top Rated Movies
             </motion.div>
 
             {/* Another Movie List with animation */}

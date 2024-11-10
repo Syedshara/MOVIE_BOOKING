@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { FaStar } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { FaStar, FaTicketAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { FaTicketAlt } from "react-icons/fa";
 import logo from '../assets/logo/logo.png'; // Import the logo image
 
 const dummyMovieData = {
@@ -12,7 +11,7 @@ const dummyMovieData = {
     background_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8tpF0mMVkwU0d99os-sXUC5gNxNmOrii6w&s",
     about_movie: "Eddie and Venom are on the run. Hunted by both of their worlds and with the net closing in, the duo are forced into a devastating decision...",
     release_date: "2024-10-24",
-    duration: 110, // Duration in minutes
+    duration: 110,
     genres: "Action, Adventure, Sci-Fi",
     languages: "English, Telugu, Hindi, Tamil",
     rating: 8.0,
@@ -23,29 +22,30 @@ const dummyRatings = [
     { rating_id: 1, user_id: 101, rating_value: 9.5, review: "Amazing movie!", created_at: "2023-11-01" },
     { rating_id: 2, user_id: 102, rating_value: 8.8, review: "Great visuals and story.", created_at: "2023-11-02" },
     { rating_id: 3, user_id: 103, rating_value: 7.5, review: "Good but a bit confusing.", created_at: "2023-11-03" },
-    // Add more dummy reviews as needed
 ];
 
 const BookingPage = () => {
-    const { id } = useParams(); // Get the movie ID from the URL params
+    const { id } = useParams();
+    const [ratedIds, setRatedIds] = useState([]);
 
-    // Scroll to the top of the page with a small delay to ensure DOM is fully rendered
     useEffect(() => {
         const timer = setTimeout(() => {
-            window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to the top with smooth scrolling
-        }, 100); // Delay of 100ms
-        return () => clearTimeout(timer); // Clean up the timeout when the component unmounts
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }, 100);
+        return () => clearTimeout(timer);
     }, []);
+
+    const handleRate = (ratingId) => {
+        setRatedIds((prev) => [...prev, ratingId]);
+    };
 
     return (
         <div className="relative">
             <div className="text-3xl p-3 m-3 font-bold flex items-center gap-2">
                 <span className="text-black">Book your tickets</span>
-                {/* Display the logo as an image */}
                 <img src={logo} alt="Logo" className="h-10" />
             </div>
             <div className="min-h-screen bg-gray-100 relative overflow-x-hidden">
-                {/* Background Section */}
                 <motion.div
                     className="absolute inset-0 bg-cover bg-center h-[400px]"
                     style={{ backgroundImage: `url(${dummyMovieData.background_url})` }}
@@ -54,9 +54,7 @@ const BookingPage = () => {
                     transition={{ duration: 0.5 }}
                 ></motion.div>
 
-                {/* Main Section */}
                 <div className="relative z-10 container mx-auto p-6 flex flex-col lg:flex-row">
-                    {/* Poster */}
                     <motion.div
                         className="w-full lg:w-[250px] h-[350px] rounded-tl-xl rounded-bl-xl overflow-hidden"
                         initial={{ opacity: 0, y: 50 }}
@@ -70,7 +68,6 @@ const BookingPage = () => {
                         />
                     </motion.div>
 
-                    {/* Movie Details */}
                     <motion.div
                         className="w-full lg:w-[calc(100%-250px)] md:h-[350px] bg-black opacity-80 text-slate-200 p-6 rounded-tr-xl rounded-br-xl"
                         initial={{ opacity: 0, y: 50 }}
@@ -79,10 +76,20 @@ const BookingPage = () => {
                     >
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-2xl md:text-3xl font-bold text-red-600">{dummyMovieData.movie_name}</h2>
-                            <div className="flex items-center">
-                                <FaStar className="text-yellow-500 mr-1" />
-                                <span className="text-lg font-bold">{dummyMovieData.rating}/10</span>
-                                <span className="text-gray-500 text-xs md:text-smml-2">({dummyMovieData.votes} Votes)</span>
+                            <div className="flex gap-3">
+                                <div className="flex items-center">
+                                    <FaStar className="text-yellow-500 mr-1" />
+                                    <span className="text-lg font-bold">{dummyMovieData.rating}/10</span>
+                                    <span className="text-gray-500 text-xs md:text-sm ml-2">({dummyMovieData.votes} Votes)</span>
+                                </div>
+                                <button
+                                    className="ml-auto px-4 py-2 rounded 
+                                        bg-slate-600 text-white hover:bg-slate-700 font-semibold
+                                        "
+
+                                >
+                                    Rate Now
+                                </button>
                             </div>
                         </div>
                         <p className="text-slate-200 text-xs md:text-sm">{dummyMovieData.about_movie}</p>
@@ -98,19 +105,18 @@ const BookingPage = () => {
                         <p>
                             <strong>Release Date:</strong> {dummyMovieData.release_date}
                         </p>
-                        <motion.button
+
+                        {/* Using Link for Navigation */}
+                        <Link
+                            to={`/movie-details/${dummyMovieData.movie_id}`}
                             className="md:px-8 py-4 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition lg:mt-10 w-64 flex items-center justify-center gap-2"
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            transition={{ duration: 0.5 }}
                         >
-                            <FaTicketAlt className="text-white" size={24} /> {/* Ticket icon */}
+                            <FaTicketAlt className="text-white" size={24} />
                             Book Tickets
-                        </motion.button>
+                        </Link>
                     </motion.div>
                 </div>
 
-                {/* Ratings Section */}
                 <motion.div
                     className="container mx-auto p-6 mt-6"
                     initial={{ opacity: 0 }}

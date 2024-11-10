@@ -14,3 +14,38 @@
     -ms-overflow-style: none;  /* Internet Explorer 10+ */
     scrollbar-width: none;  /* Firefox */
 }
+
+body, html {
+    overflow: auto;
+}
+
+/* In App.css or another stylesheet */
+.custom-header1 {
+    font-family: 'Rubik', sans-serif;
+  }
+
+  /* In App.css or another stylesheet */
+.custom-header {
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+  
+  
+  }
+  .seat-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.tier {
+    margin-bottom: 1.5rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 8px;
+}
+
+

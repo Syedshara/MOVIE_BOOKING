@@ -10,14 +10,14 @@ const CarouselSlide = () => {
                     <img
                         src="https://www.hindustantimes.com/ht-img/img/2024/02/23/550x309/Crakk_movie_review_1708665608923_1708665609147.jpeg"
                         alt="..."
-                        className="w-full h-full object-cover lg:blur-sm"
+                        className="w-full h-full object-cover md:blur-sm"
                     />
                     {/* Smaller clear image overlaying the blurred background */}
-                    <div className="absolute top-0  lg:left-1/4 lg:right-1/4 w-auto">
+                    <div className="absolute top-0 hidden md:inline left-1/4 right-1/4 ">
                         <img
                             src="https://www.hindustantimes.com/ht-img/img/2024/02/23/550x309/Crakk_movie_review_1708665608923_1708665609147.jpeg"
                             alt="..."
-                            className="w-full min-h-full object-cover"
+                            className="w-full h-full  object-cover"
                         />
                     </div>
                 </div>

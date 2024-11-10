@@ -9,6 +9,9 @@ import { Routes, Route } from 'react-router-dom';
 
 import Main from '../pages/Main';
 import BookingPage from '../pages/BookingPage';
+import ScrollUp from '../component/ScrollUp';
+import MovieDetailsPage from '../pages/MovieDetailsPage';
+import SeatSelectionPage from '../pages/SeatSelectionPage';
 
 const AppContent = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -23,6 +26,8 @@ const AppContent = () => {
 
     return (
         <div className="flex h-screen">
+            <ScrollUp />
+
             {/* Sidebar */}
             <Sidebar>
                 <SidebarItem icon={<Home size={20} />} text="Home" to="/" />
@@ -37,6 +42,8 @@ const AppContent = () => {
                 <Routes>
                     <Route path="/" element={<Main />} />
                     <Route path="/booking/:id" element={<BookingPage />} />
+                    <Route path="/movie-details/:id" element={<MovieDetailsPage />} />
+                    <Route path="/seats/:screenId" element={<SeatSelectionPage />} />
                 </Routes>
             </div>
         </div>
