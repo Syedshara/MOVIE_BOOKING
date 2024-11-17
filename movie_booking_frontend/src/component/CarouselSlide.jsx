@@ -14,7 +14,7 @@ const CarouselSlide = ({ movies }) => {
                         />
                         <div className="absolute top-0 hidden md:inline left-1/4 right-1/4 ">
                             <img
-                                src={movie.poster_url}
+                                src={movie.background_url}
                                 alt={movie.movie_name}
                                 className="w-full h-full object-cover"
                             />
