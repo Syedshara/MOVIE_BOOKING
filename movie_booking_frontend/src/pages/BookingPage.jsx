@@ -4,40 +4,52 @@ import { FaStar, FaTicketAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
 import logo from '../assets/logo/logo.png'; // Import the logo image
 
-const dummyMovieData = {
-    movie_id: 1,
-    movie_name: "Venom: The Last Dance",
-    poster_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMFUjVQL19dmYX1hx83xiiQMVsLe_ixxvdcw&s",
-    background_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8tpF0mMVkwU0d99os-sXUC5gNxNmOrii6w&s",
-    about_movie: "Eddie and Venom are on the run. Hunted by both of their worlds and with the net closing in, the duo are forced into a devastating decision...",
-    release_date: "2024-10-24",
-    duration: 110,
-    genres: "Action, Adventure, Sci-Fi",
-    languages: "English, Telugu, Hindi, Tamil",
-    rating: 8.0,
-    votes: "62.1K",
-};
-
-const dummyRatings = [
-    { rating_id: 1, user_id: 101, rating_value: 9.5, review: "Amazing movie!", created_at: "2023-11-01" },
-    { rating_id: 2, user_id: 102, rating_value: 8.8, review: "Great visuals and story.", created_at: "2023-11-02" },
-    { rating_id: 3, user_id: 103, rating_value: 7.5, review: "Good but a bit confusing.", created_at: "2023-11-03" },
-];
-
 const BookingPage = () => {
-    const { id } = useParams();
+    const { id } = useParams();  // Fetch movie ID from URL
+    const [movieData, setMovieData] = useState(null);
+    const [ratings, setRatings] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [ratedIds, setRatedIds] = useState([]);
 
+    // Fetch movie data and dummy ratings
     useEffect(() => {
-        const timer = setTimeout(() => {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        }, 100);
-        return () => clearTimeout(timer);
-    }, []);
+        const fetchMovieData = async () => {
+            try {
+                const movieResponse = await fetch(`http://localhost:8080/moviebooking/getMovie/${id}`);
+                const movie = await movieResponse.json();
+                setMovieData(movie);  // Set movie data
+
+                // Use dummy ratings data for now
+                const dummyRatings = [
+                    { rating_id: 1, rating_value: 8, review: "Great movie!", created_at: "2024-11-15T12:34:56Z" },
+                    { rating_id: 2, rating_value: 7, review: "Good, but could be better.", created_at: "2024-11-14T10:20:30Z" },
+                    { rating_id: 3, rating_value: 9, review: "Amazing plot and visuals.", created_at: "2024-11-13T08:15:45Z" }
+                ];
+
+                setRatings(dummyRatings);  // Set dummy ratings data
+
+                setLoading(false);  // Set loading to false once data is fetched
+            } catch (error) {
+                console.error("Error fetching movie data:", error);
+                setLoading(false);
+            }
+        };
+
+        fetchMovieData();
+    }, [id]);
 
     const handleRate = (ratingId) => {
         setRatedIds((prev) => [...prev, ratingId]);
     };
+
+    // Return loading spinner or data when available
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (!movieData) {
+        return <div>Error loading movie data.</div>;
+    }
 
     return (
         <div className="relative">
@@ -48,7 +60,7 @@ const BookingPage = () => {
             <div className="min-h-screen bg-gray-100 relative overflow-x-hidden">
                 <motion.div
                     className="absolute inset-0 bg-cover bg-center h-[400px]"
-                    style={{ backgroundImage: `url(${dummyMovieData.background_url})` }}
+                    style={{ backgroundImage: `url(${movieData.background_url})` }}
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     transition={{ duration: 0.5 }}
@@ -62,8 +74,8 @@ const BookingPage = () => {
                         transition={{ duration: 0.5 }}
                     >
                         <img
-                            src={dummyMovieData.poster_url}
-                            alt={dummyMovieData.movie_name}
+                            src={movieData.poster_url}
+                            alt={movieData.movie_name}
                             className="w-full h-full rounded-tl-xl rounded-b-xl shadow-lg object-cover"
                         />
                     </motion.div>
@@ -75,12 +87,12 @@ const BookingPage = () => {
                         transition={{ duration: 0.5 }}
                     >
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl md:text-3xl font-bold text-red-600">{dummyMovieData.movie_name}</h2>
+                            <h2 className="text-2xl md:text-3xl font-bold text-red-600">{movieData.movie_name}</h2>
                             <div className="flex gap-3">
                                 <div className="flex items-center">
                                     <FaStar className="text-yellow-500 mr-1" />
-                                    <span className="text-lg font-bold">{dummyMovieData.rating}/10</span>
-                                    <span className="text-gray-500 text-xs md:text-sm ml-2">({dummyMovieData.votes} Votes)</span>
+                                    <span className="text-lg font-bold">{movieData.rating}/10</span>
+                                    <span className="text-gray-500 text-xs md:text-sm ml-2">({movieData.votes} Votes)</span>
                                 </div>
                                 <button
                                     className="ml-auto px-4 py-2 rounded 
@@ -91,23 +103,23 @@ const BookingPage = () => {
                                 </button>
                             </div>
                         </div>
-                        <p className="text-slate-200 text-xs md:text-sm">{dummyMovieData.about_movie}</p>
+                        <p className="text-slate-200 text-xs md:text-sm">{movieData.about_movie}</p>
                         <p className="md:mt-4">
-                            <strong>Duration:</strong> {dummyMovieData.duration} min
+                            <strong>Duration:</strong> {movieData.duration} min
                         </p>
                         <p>
-                            <strong>Languages:</strong> {dummyMovieData.languages}
+                            <strong>Languages:</strong> {movieData.languages}
                         </p>
                         <p>
-                            <strong>Genres:</strong> {dummyMovieData.genres}
+                            <strong>Genres:</strong> {movieData.genres}
                         </p>
                         <p>
-                            <strong>Release Date:</strong> {dummyMovieData.release_date}
+                            <strong>Release Date:</strong> {movieData.release_date}
                         </p>
 
                         {/* Using Link for Navigation */}
                         <Link
-                            to={`/movie-details/${dummyMovieData.movie_id}`}
+                            to={`/movie-details/${movieData.movie_id}`}
                             className="md:px-8 py-4 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition lg:mt-10 w-64 flex items-center justify-center gap-2"
                         >
                             <FaTicketAlt className="text-white" size={24} />
@@ -137,13 +149,13 @@ const BookingPage = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
-                        Title of the movie
+                        {movieData.movie_name}
                     </motion.h2>
                     <div className="flex justify-center">
                         <iframe
                             width="560"
                             height="315"
-                            src="https://www.youtube.com/embed/dQw4w9WgXcQ" // Replace with your trailer video URL
+                            src={movieData.trailer_url} // Using real trailer URL from backend
                             title="YouTube video"
                             frameBorder="0"
                             allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
@@ -168,7 +180,7 @@ const BookingPage = () => {
                         User Ratings & Reviews
                     </motion.h2>
                     <div className="space-y-4">
-                        {dummyRatings.map((rating) => (
+                        {ratings.map((rating) => (
                             <motion.div
                                 key={rating.rating_id}
                                 className="p-4 bg-white shadow-md rounded-lg flex items-start gap-4"

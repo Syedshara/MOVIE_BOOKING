@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { IoClose } from "react-icons/io5";
 
 const SearchOverlay = ({ onClose }) => {
@@ -6,6 +6,8 @@ const SearchOverlay = ({ onClose }) => {
     const [isBackgroundVisible, setIsBackgroundVisible] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [searchType, setSearchType] = useState("movies");
+
+    const modalRef = useRef(null); // Ref to detect clicks inside modal
 
     const recentMovies = [
         "The Dark Knight",
@@ -32,7 +34,21 @@ const SearchOverlay = ({ onClose }) => {
             setIsModalVisible(true);
         }, 50); // Show modal after 50ms for a smoother effect
 
-        return () => clearTimeout(timer);
+        // Close the overlay if clicked outside the modal
+        const handleClickOutside = (event) => {
+            if (modalRef.current && !modalRef.current.contains(event.target)) {
+                handleClose(); // Close the modal if clicked outside
+            }
+        };
+
+        // Attach click listener to the document
+        document.addEventListener("mousedown", handleClickOutside);
+
+        // Cleanup event listener when component is unmounted
+        return () => {
+            clearTimeout(timer);
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
     }, []);
 
     const handleSearchChange = (event) => {
@@ -63,6 +79,7 @@ const SearchOverlay = ({ onClose }) => {
                 className={`fixed inset-0 flex justify-center items-center transition-transform transform duration-300 ease-in-out ${isModalVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
             >
                 <div
+                    ref={modalRef} // Attach the ref to the modal content
                     className="p-8 m-3 w-[600px] rounded-lg shadow-xl"
                     style={{
                         background: "linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.7))",
@@ -113,8 +130,8 @@ const SearchOverlay = ({ onClose }) => {
                         Search
                     </button>
 
-                    <div className="mt-4  pl-10 max-full justify-center  items-center flex space-x-8">
-                        <div className="w-1/2 ">
+                    <div className="mt-4 pl-10 max-full justify-center items-center flex space-x-8">
+                        <div className="w-1/2">
                             <h3 className="font-semibold text-lg text-gray-700 mb-2">Recent Movies</h3>
                             <ul className="space-y-2">
                                 {recentMovies.map((item, index) => (
