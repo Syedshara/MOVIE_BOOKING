@@ -19,7 +19,7 @@ const Main = () => {
 
 
         // Fetching states data for the dropdown
-        axios.get('http://localhost:8080/movie_booking_backend/getStates')
+        axios.get('http://192.168.43.203:8080/movie_booking_backend/getStates')
             .then((response) => {
                 setStates(response.data);
                 setSelectedState("Tamil Nadu")
