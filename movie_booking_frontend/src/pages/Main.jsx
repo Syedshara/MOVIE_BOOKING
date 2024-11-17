@@ -15,7 +15,6 @@ const Main = () => {
                 viewport={{ once: false }} // The animation will trigger every time it enters the viewport
             >
                 <span className="text-black">Welcome to </span>
-                {/* Use the <img> tag to display the logo */}
                 <span className="text-red-500">
                     <img src={logo} alt="Logo" className="inline-block h-8" />
                 </span>

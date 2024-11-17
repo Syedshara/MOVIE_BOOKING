@@ -57,7 +57,7 @@ const BookingPage = () => {
                 <div className="relative z-10 container mx-auto p-6 flex flex-col lg:flex-row">
                     <motion.div
                         className="w-full lg:w-[250px] h-[350px] rounded-tl-xl rounded-bl-xl overflow-hidden"
-                        initial={{ opacity: 0, y: 50 }}
+                        initial={{ opacity: 0, y: 10 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
@@ -70,7 +70,7 @@ const BookingPage = () => {
 
                     <motion.div
                         className="w-full lg:w-[calc(100%-250px)] md:h-[350px] bg-black opacity-80 text-slate-200 p-6 rounded-tr-xl rounded-br-xl"
-                        initial={{ opacity: 0, y: 50 }}
+                        initial={{ opacity: 0, y: 10 }}
                         whileInView={{ opacity: 0.8, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
@@ -86,7 +86,6 @@ const BookingPage = () => {
                                     className="ml-auto px-4 py-2 rounded 
                                         bg-slate-600 text-white hover:bg-slate-700 font-semibold
                                         "
-
                                 >
                                     Rate Now
                                 </button>
@@ -117,6 +116,43 @@ const BookingPage = () => {
                     </motion.div>
                 </div>
 
+                {/* YouTube Video Section */}
+                <motion.div
+                    className="container mx-auto p-6 mt-6"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <motion.h2
+                        className="text-xl font-semibold mb-4 text-gray-400"
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        Watch the Trailer
+                    </motion.h2>
+                    <motion.h2
+                        className="text-3xl font-bold  mb-4"
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        Title of the movie
+                    </motion.h2>
+                    <div className="flex justify-center">
+                        <iframe
+                            width="560"
+                            height="315"
+                            src="https://www.youtube.com/embed/dQw4w9WgXcQ" // Replace with your trailer video URL
+                            title="YouTube video"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className="rounded-lg shadow-lg"
+                        ></iframe>
+                    </div>
+                </motion.div>
+
                 <motion.div
                     className="container mx-auto p-6 mt-6"
                     initial={{ opacity: 0 }}
@@ -125,7 +161,7 @@ const BookingPage = () => {
                 >
                     <motion.h2
                         className="text-xl font-bold mb-4"
-                        initial={{ opacity: 0, y: 50 }}
+                        initial={{ opacity: 0, y: 10 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
