@@ -14,7 +14,8 @@ public class MovieServlet extends HttpServlet {
     private static final String JDBC_URL = "jdbc:postgresql://localhost:5433/movieticketdb";
     private static final String JDBC_USER = "postgres";
     private static final String JDBC_PASSWORD = "vishal888";
-//vishal
+
+    // vishal
     @Override
     public void init() throws ServletException {
         try {

@@ -7,6 +7,7 @@ import java.io.*;
 import java.sql.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
 //l
 @WebServlet("/signup")
 public class SignupServlet extends HttpServlet {
@@ -36,7 +37,8 @@ public class SignupServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
         response.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -51,7 +53,8 @@ public class SignupServlet extends HttpServlet {
             }
         }
 
-        // Extract username, email, passwordHash, and phoneNumber from the JSON body manually
+        // Extract username, email, passwordHash, and phoneNumber from the JSON body
+        // manually
         String username = null;
         String email = null;
         String password = null;
@@ -60,7 +63,8 @@ public class SignupServlet extends HttpServlet {
         try {
             String json = jsonInput.toString();
             // Extract data from the raw JSON string manually
-            if (json.contains("\"username\"") && json.contains("\"email\"") && json.contains("\"password\"") && json.contains("\"phoneNumber\"")) {
+            if (json.contains("\"username\"") && json.contains("\"email\"") && json.contains("\"password\"")
+                    && json.contains("\"phoneNumber\"")) {
                 username = json.split("\"username\"")[1].split(":")[1].split("\"")[1];
                 email = json.split("\"email\"")[1].split(":")[1].split("\"")[1];
                 password = json.split("\"password\"")[1].split(":")[1].split("\"")[1];

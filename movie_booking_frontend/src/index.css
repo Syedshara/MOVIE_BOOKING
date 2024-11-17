@@ -48,4 +48,17 @@ body, html {
     gap: 8px;
 }
 
+@keyframes growShrink {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1); /* Grow to 110% size */
+    }
+    100% {
+        transform: scale(1); /* Shrink back to original size */
+    }
+}
+
+
 

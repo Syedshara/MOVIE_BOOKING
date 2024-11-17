@@ -5,12 +5,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.*;
 import java.sql.*;
+
 @WebServlet("/getMovie/*")
 public class SingleMovieServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final String JDBC_URL = "jdbc:postgresql://localhost:5433/movieticketdb";
     private static final String JDBC_USER = "postgres";
     private static final String JDBC_PASSWORD = "vishal888";
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -92,4 +94,3 @@ public class SingleMovieServlet extends HttpServlet {
         }
     }
 }
-

@@ -12,6 +12,8 @@ import BookingPage from '../pages/BookingPage';
 import ScrollUp from '../component/ScrollUp';
 import MovieDetailsPage from '../pages/MovieDetailsPage';
 import SeatSelectionPage from '../pages/SeatSelectionPage';
+import Signup from '../pages/Signup';
+import Login from '../pages/Login';
 
 const AppContent = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -44,6 +46,9 @@ const AppContent = () => {
                     <Route path="/booking/:id" element={<BookingPage />} />
                     <Route path="/movie-details/:id" element={<MovieDetailsPage />} />
                     <Route path="/seats/:screenId" element={<SeatSelectionPage />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/login" element={<Login />} />
+
                 </Routes>
             </div>
         </div>

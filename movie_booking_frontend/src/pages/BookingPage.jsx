@@ -4,6 +4,7 @@ import { FaStar, FaTicketAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
 import ReactPlayer from "react-player";
 import logo from '../assets/logo/logo.png'; // Import the logo image
+import RatingOverlay from "../component/RatingOverlay";
 
 const BookingPage = () => {
     const { id } = useParams();  // Fetch movie ID from URL
@@ -11,14 +12,18 @@ const BookingPage = () => {
     const [ratings, setRatings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [ratedIds, setRatedIds] = useState([]);
+    const [showOverlay, setShowOverlay] = useState(false);  // State to show/hide overlay
+    const [userRating, setUserRating] = useState(0);  // User rating input
+    const [userReview, setUserReview] = useState("");  // User review input
 
     // Fetch movie data and dummy ratings
     useEffect(() => {
         const fetchMovieData = async () => {
             try {
-                const movieResponse = await fetch(`http://localhost:8080/movie_booking_backend/getMovie/${id}`);
+                const movieResponse = await fetch(`http://10.16.48.202:8080/movie_booking_backend/getMovie/${id}`);
                 const movie = await movieResponse.json();
                 setMovieData(movie);  // Set movie data
+                console.log(movie);
 
                 // Use dummy ratings data for now
                 const dummyRatings = [
@@ -39,13 +44,37 @@ const BookingPage = () => {
         fetchMovieData();
     }, [id]);
 
-    const handleRate = (ratingId) => {
-        setRatedIds((prev) => [...prev, ratingId]);
+    const handleRate = () => {
+        // Here you can handle the rating submission to the backend
+        console.log("User Rating:", userRating);
+        console.log("User Review:", userReview);
+        setShowOverlay(false);  // Hide overlay after submitting the rating
     };
 
     // Return loading spinner or data when available
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-gray-100">
+                <motion.div
+                    className="flex flex-col items-center justify-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <div className="relative">
+                        <img
+                            src={logo}
+                            alt="Logo"
+                            className="h-20 mb-4 transform transition-transform duration-500 ease-in-out"
+                            style={{ animation: 'growShrink 2s infinite' }}
+                        />
+                        {/* Gradient white overlay */}
+                        <div className="absolute inset-0 bg-transparent opacity-50 rounded-lg"></div>
+                    </div>
+                    <p className="text-lg text-gray-500">Loading...</p>
+                </motion.div>
+            </div>
+        );
     }
 
     if (!movieData) {
@@ -58,16 +87,16 @@ const BookingPage = () => {
                 <span className="text-black">Book your tickets</span>
                 <img src={logo} alt="Logo" className="h-10" />
             </div>
-            <div className="min-h-screen bg-gray-100 relative overflow-x-hidden">
-            <motion.div
-  className="absolute inset-0 bg-cover bg-center h-[400px] blur-xs"
-  style={{ backgroundImage: `url(${movieData.background_url})` }}
-  initial={{ opacity: 0 }}
-  whileInView={{ opacity: 1 }}
-  transition={{ duration: 0.5 }}
->
-  <div className="absolute inset-0 bg-black bg-opacity-65"></div>
-</motion.div>
+            <div className="min-h-screen bg-gray-100 relative ">
+                <motion.div
+                    className="absolute inset-0 bg-cover bg-center h-[400px] blur-xs"
+                    style={{ backgroundImage: `url(${movieData.background_url})` }}
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <div className="absolute inset-0 bg-black bg-opacity-65"></div>
+                </motion.div>
 
                 <div className="relative z-10 container mx-auto p-6 flex flex-col lg:flex-row">
                     <motion.div
@@ -86,7 +115,7 @@ const BookingPage = () => {
                     <motion.div
                         className="w-full lg:w-[calc(100%-250px)] md:h-[350px] bg-black opacity-80 text-slate-200 p-6 rounded-tr-xl rounded-br-xl"
                         initial={{ opacity: 0, y: 10 }}
-                        whileInView={{ opacity: 0.8, y: 0 }}
+                        whileInView={{ opacity: 0.75, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
                         <div className="flex justify-between items-center mb-4">
@@ -99,25 +128,30 @@ const BookingPage = () => {
                                 </div>
                                 <button
                                     className="ml-auto px-4 py-2 rounded 
-                                        bg-slate-600 text-white hover:bg-slate-700 font-semibold
-                                        "
+                                        bg-slate-600 text-white hover:bg-slate-700 font-semibold"
+                                    onClick={() => setShowOverlay(true)}// Show overlay when clicked
                                 >
                                     Rate Now
                                 </button>
                             </div>
                         </div>
                         <p className="text-slate-200 text-xs md:text-sm">{movieData.about_movie}</p>
-                        <p className="md:mt-4">
-                            <strong>Duration:</strong> {movieData.duration} min
+                        <p className="md:mt-4 mr-1">
+                            <strong className="mr-2">Duration:</strong>
+                            {Math.floor(movieData.duration / 60)} hr {movieData.duration % 60} min
+                        </p>
+
+                        <p>
+                            <strong>Languages:</strong> {movieData.language}
                         </p>
                         <p>
-                            <strong>Languages:</strong> {movieData.languages}
+                            <strong>Genres:</strong> {movieData.genre}
                         </p>
                         <p>
-                            <strong>Genres:</strong> {movieData.genres}
+                            <strong>Release Date:</strong> {movieData.release_date.split(' ')[0]}
                         </p>
                         <p>
-                            <strong>Release Date:</strong> {movieData.release_date}
+                            <strong>Plot:</strong> {movieData.plot}
                         </p>
 
                         {/* Using Link for Navigation */}
@@ -139,12 +173,12 @@ const BookingPage = () => {
                     transition={{ duration: 0.5 }}
                 >
                     <motion.h2
-                        className="text-xl font-semibold mb-4 text-gray-400"
+                        className="text-xl  mb-4 text-gray-400"
                         initial={{ opacity: 0, y: 10 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
-                        Watch the Trailer
+                        Watch Trailer...
                     </motion.h2>
                     <motion.h2
                         className="text-3xl font-bold  mb-4"
@@ -157,53 +191,24 @@ const BookingPage = () => {
                     <div className="flex justify-center">
                         <ReactPlayer
                             url={movieData.trailer_url}  // Assuming trailer_url contains a valid YouTube URL
-                            width="560px"
-                            height="315px"
-                            className="rounded-lg shadow-lg"
+                            width="650px"
+                            height="410px"
                             controls
                         />
                     </div>
                 </motion.div>
-
-                <motion.div
-                    className="container mx-auto p-6 mt-6"
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <motion.h2
-                        className="text-xl font-bold mb-4"
-                        initial={{ opacity: 0, y: 10 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
-                    >
-                        User Ratings & Reviews
-                    </motion.h2>
-                    <div className="space-y-4">
-                        {ratings.map((rating) => (
-                            <motion.div
-                                key={rating.rating_id}
-                                className="p-4 bg-white shadow-md rounded-lg flex items-start gap-4"
-                                initial={{ opacity: 0, y: 50 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5 }}
-                                viewport={{ once: true }}
-                            >
-                                <div className="flex items-center gap-1 text-yellow-500">
-                                    <FaStar />
-                                    <span className="font-bold">{rating.rating_value}</span>
-                                </div>
-                                <div>
-                                    <p className="text-gray-700">{rating.review}</p>
-                                    <p className="text-sm text-gray-500">
-                                        {new Date(rating.created_at).toLocaleDateString()}
-                                    </p>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-                </motion.div>
             </div>
+
+            <RatingOverlay
+                showOverlay={showOverlay}
+                setShowOverlay={setShowOverlay}
+                userRating={userRating}
+                setUserRating={setUserRating}
+                userReview={userReview}
+                setUserReview={setUserReview}
+                handleRate={handleRate}
+            />
+
         </div>
     );
 };
