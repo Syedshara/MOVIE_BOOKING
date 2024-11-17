@@ -1,22 +1,22 @@
-import React, { useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import MovieCard from './MovieCard';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'; // Arrow icons
+import axios from 'axios';
 
 const MovieList = () => {
-    // Dummy movie data
-    const movies = [
-        { id: 1, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMFUjVQL19dmYX1hx83xiiQMVsLe_ixxvdcw&s", name: "Movie 1 jfvhjdsfjhsdjh  hsd fhsd", rating: "8.1/10", genre: "Action , Emotion", releaseDate: "2023-01-01" },
-        { id: 2, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMFUjVQL19dmYX1hx83xiiQMVsLe_ixxvdcw&s", name: "Movie 2", rating: "7.5/10", genre: "Comedy", releaseDate: "2022-05-15" },
-        { id: 3, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMFUjVQL19dmYX1hx83xiiQMVsLe_ixxvdcw&s", name: "Movie 3", rating: "9.0/10", genre: "Sci-Fi", releaseDate: "2021-07-20" },
-        { id: 4, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMFUjVQL19dmYX1hx83xiiQMVsLe_ixxvdcw&s", name: "Movie 4", rating: "6.8/10", genre: "Horror", releaseDate: "2020-11-10" },
-        { id: 5, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMFUjVQL19dmYX1hx83xiiQMVsLe_ixxvdcw&s", name: "Movie 5", rating: "7.2/10", genre: "Romance", releaseDate: "2022-09-25" },
-        { id: 6, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMFUjVQL19dmYX1hx83xiiQMVsLe_ixxvdcw&s", name: "Movie 6", rating: "8.5/10", genre: "Action", releaseDate: "2021-12-12" },
-        { id: 7, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMFUjVQL19dmYX1hx83xiiQMVsLe_ixxvdcw&s", name: "Movie 7", rating: "7.9/10", genre: "Animation", releaseDate: "2023-06-03" },
-        { id: 8, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMFUjVQL19dmYX1hx83xiiQMVsLe_ixxvdcw&s", name: "Movie 8", rating: "8.3/10", genre: "Fantasy", releaseDate: "2023-08-21" },
-        { id: 9, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMFUjVQL19dmYX1hx83xiiQMVsLe_ixxvdcw&s", name: "Movie 9", rating: "6.9/10", genre: "Action", releaseDate: "2022-04-30" },
-        { id: 10, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMFUjVQL19dmYX1hx83xiiQMVsLe_ixxvdcw&s", name: "Movie 10", rating: "7.8/10", genre: "Drama", releaseDate: "2021-09-15" }
-    ];
+    const [movies, setMovies] = useState([]);  // State to store fetched movies
     const movieListRef = useRef();
+
+    // Fetch movie data from the API
+    useEffect(() => {
+        axios.get('http://localhost:8080/moviebooking/getMovies')
+            .then((response) => {
+                setMovies(response.data);  // Store the fetched movies in state
+            })
+            .catch((error) => {
+                console.error('Error fetching movie data:', error);
+            });
+    }, []);
 
     const scrollLeft = () => {
         if (movieListRef.current) {
@@ -45,8 +45,8 @@ const MovieList = () => {
                 className="overflow-x-scroll flex space-x-4 pb-4 scrollbar-hide px-10"
                 style={{ scrollPaddingLeft: '10px', scrollPaddingRight: '10px' }} // Adds padding for the slider
             >
-                {movies.map((movie, index) => (
-                    <MovieCard key={index} movie={movie} />
+                {movies.map((movie) => (
+                    <MovieCard key={movie.movie_id} movie={movie} />
                 ))}
             </div>
             <FaChevronRight
