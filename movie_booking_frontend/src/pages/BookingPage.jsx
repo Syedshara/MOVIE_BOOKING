@@ -59,13 +59,15 @@ const BookingPage = () => {
                 <img src={logo} alt="Logo" className="h-10" />
             </div>
             <div className="min-h-screen bg-gray-100 relative overflow-x-hidden">
-                <motion.div
-                    className="absolute inset-0 bg-cover bg-center h-[400px]"
-                    style={{ backgroundImage: `url(${movieData.background_url})` }}
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                ></motion.div>
+            <motion.div
+  className="absolute inset-0 bg-cover bg-center h-[400px] blur-xs"
+  style={{ backgroundImage: `url(${movieData.background_url})` }}
+  initial={{ opacity: 0 }}
+  whileInView={{ opacity: 1 }}
+  transition={{ duration: 0.5 }}
+>
+  <div className="absolute inset-0 bg-black bg-opacity-65"></div>
+</motion.div>
 
                 <div className="relative z-10 container mx-auto p-6 flex flex-col lg:flex-row">
                     <motion.div
