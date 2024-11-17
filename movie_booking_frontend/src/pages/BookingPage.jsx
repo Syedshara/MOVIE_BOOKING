@@ -2,31 +2,28 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { FaStar, FaTicketAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
+import axios from "axios";
 import logo from '../assets/logo/logo.png'; // Import the logo image
-
-const dummyMovieData = {
-    movie_id: 1,
-    movie_name: "Venom: The Last Dance",
-    poster_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMFUjVQL19dmYX1hx83xiiQMVsLe_ixxvdcw&s",
-    background_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSk8tpF0mMVkwU0d99os-sXUC5gNxNmOrii6w&s",
-    about_movie: "Eddie and Venom are on the run. Hunted by both of their worlds and with the net closing in, the duo are forced into a devastating decision...",
-    release_date: "2024-10-24",
-    duration: 110,
-    genres: "Action, Adventure, Sci-Fi",
-    languages: "English, Telugu, Hindi, Tamil",
-    rating: 8.0,
-    votes: "62.1K",
-};
-
-const dummyRatings = [
-    { rating_id: 1, user_id: 101, rating_value: 9.5, review: "Amazing movie!", created_at: "2023-11-01" },
-    { rating_id: 2, user_id: 102, rating_value: 8.8, review: "Great visuals and story.", created_at: "2023-11-02" },
-    { rating_id: 3, user_id: 103, rating_value: 7.5, review: "Good but a bit confusing.", created_at: "2023-11-03" },
-];
 
 const BookingPage = () => {
     const { id } = useParams();
+    const [movieData, setMovieData] = useState(null);
+    const [error, setError] = useState(null);
     const [ratedIds, setRatedIds] = useState([]);
+
+    useEffect(() => {
+        const fetchMovieDetails = async () => {
+            try {
+                const response = await axios.get(`/api/movies/${id}`); // Assuming your API endpoint for movie details is like this
+                setMovieData(response.data);
+            } catch (error) {
+                setError("Failed to fetch movie details.");
+                console.error(error);
+            }
+        };
+
+        fetchMovieDetails();
+    }, [id]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -39,6 +36,14 @@ const BookingPage = () => {
         setRatedIds((prev) => [...prev, ratingId]);
     };
 
+    if (error) {
+        return <div className="text-center text-red-600">{error}</div>;
+    }
+
+    if (!movieData) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <div className="relative">
             <div className="text-3xl p-3 m-3 font-bold flex items-center gap-2">
@@ -48,7 +53,7 @@ const BookingPage = () => {
             <div className="min-h-screen bg-gray-100 relative overflow-x-hidden">
                 <motion.div
                     className="absolute inset-0 bg-cover bg-center h-[400px]"
-                    style={{ backgroundImage: `url(${dummyMovieData.background_url})` }}
+                    style={{ backgroundImage: `url(${movieData.background_url})` }}
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     transition={{ duration: 0.5 }}
@@ -62,8 +67,8 @@ const BookingPage = () => {
                         transition={{ duration: 0.5 }}
                     >
                         <img
-                            src={dummyMovieData.poster_url}
-                            alt={dummyMovieData.movie_name}
+                            src={movieData.poster_url}
+                            alt={movieData.movie_name}
                             className="w-full h-full rounded-tl-xl rounded-b-xl shadow-lg object-cover"
                         />
                     </motion.div>
@@ -75,12 +80,14 @@ const BookingPage = () => {
                         transition={{ duration: 0.5 }}
                     >
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl md:text-3xl font-bold text-red-600">{dummyMovieData.movie_name}</h2>
+                            <h2 className="text-2xl md:text-3xl font-bold text-red-600">{movieData.movie_name}</h2>
                             <div className="flex gap-3">
                                 <div className="flex items-center">
                                     <FaStar className="text-yellow-500 mr-1" />
-                                    <span className="text-lg font-bold">{dummyMovieData.rating}/10</span>
-                                    <span className="text-gray-500 text-xs md:text-sm ml-2">({dummyMovieData.votes} Votes)</span>
+                                    <span className="text-lg font-bold">{movieData.rating || "N/A"}/10</span>
+                                    <span className="text-gray-500 text-xs md:text-sm ml-2">
+                                        {movieData.votes ? `(${movieData.votes} Votes)` : "(0 Votes)"}
+                                    </span>
                                 </div>
                                 <button
                                     className="ml-auto px-4 py-2 rounded 
@@ -91,23 +98,23 @@ const BookingPage = () => {
                                 </button>
                             </div>
                         </div>
-                        <p className="text-slate-200 text-xs md:text-sm">{dummyMovieData.about_movie}</p>
+                        <p className="text-slate-200 text-xs md:text-sm">{movieData.plot}</p>
                         <p className="md:mt-4">
-                            <strong>Duration:</strong> {dummyMovieData.duration} min
+                            <strong>Duration:</strong> {movieData.duration} min
                         </p>
                         <p>
-                            <strong>Languages:</strong> {dummyMovieData.languages}
+                            <strong>Languages:</strong> {movieData.language}
                         </p>
                         <p>
-                            <strong>Genres:</strong> {dummyMovieData.genres}
+                            <strong>Genres:</strong> {movieData.genre}
                         </p>
                         <p>
-                            <strong>Release Date:</strong> {dummyMovieData.release_date}
+                            <strong>Release Date:</strong> {new Date(movieData.release_date).toLocaleDateString()}
                         </p>
 
                         {/* Using Link for Navigation */}
                         <Link
-                            to={`/movie-details/${dummyMovieData.movie_id}`}
+                            to={`/movie-details/${movieData.movie_id}`}
                             className="md:px-8 py-4 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition lg:mt-10 w-64 flex items-center justify-center gap-2"
                         >
                             <FaTicketAlt className="text-white" size={24} />
@@ -137,13 +144,13 @@ const BookingPage = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
-                        Title of the movie
+                        {movieData.movie_name}
                     </motion.h2>
                     <div className="flex justify-center">
                         <iframe
                             width="560"
                             height="315"
-                            src="https://www.youtube.com/embed/dQw4w9WgXcQ" // Replace with your trailer video URL
+                            src={movieData.trailer_url} // Use the trailer URL from the movie data
                             title="YouTube video"
                             frameBorder="0"
                             allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
