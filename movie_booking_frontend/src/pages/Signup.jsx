@@ -31,7 +31,7 @@ const Signup = () => {
         };
 
         // API endpoint
-        const apiEndpoint = 'http://10.16.48.202:8080/movie_booking_backend/signup';  // Make sure the endpoint is for registration
+        const apiEndpoint = 'http://localhost:8080/movie_booking_backend/signup';  // Make sure the endpoint is for registration
 
         // Send the POST request with the correct payload
         axios.post(apiEndpoint, userData)

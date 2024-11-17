@@ -27,13 +27,31 @@ public class CityServlet extends HttpServlet {
         }
 
         List<String> cities = new ArrayList<>();
+        int stateId = -1;
+
         try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
-            String query = "SELECT city_name FROM Cities WHERE state_name = ? ORDER BY city_name ASC";
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setString(1, stateName);
-                try (ResultSet rs = stmt.executeQuery()) {
-                    while (rs.next()) {
-                        cities.add(rs.getString("city_name"));
+            // Retrieve state_id using state_name
+            String stateQuery = "SELECT state_id FROM States WHERE state_name = ?";
+            try (PreparedStatement stateStmt = conn.prepareStatement(stateQuery)) {
+                stateStmt.setString(1, stateName);
+                try (ResultSet stateRs = stateStmt.executeQuery()) {
+                    if (stateRs.next()) {
+                        stateId = stateRs.getInt("state_id");
+                    } else {
+                        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                        response.getWriter().write("{\"error\":\"State not found.\"}");
+                        return;
+                    }
+                }
+            }
+
+            // Retrieve cities using state_id
+            String cityQuery = "SELECT city_name FROM Cities WHERE state_id = ? ORDER BY city_name ASC";
+            try (PreparedStatement cityStmt = conn.prepareStatement(cityQuery)) {
+                cityStmt.setInt(1, stateId);
+                try (ResultSet cityRs = cityStmt.executeQuery()) {
+                    while (cityRs.next()) {
+                        cities.add(cityRs.getString("city_name"));
                     }
                 }
             }
@@ -50,11 +68,12 @@ public class CityServlet extends HttpServlet {
             return;
         }
 
-        String defaultCity = cities.get(0);
+        String defaultCity = cities.get(1);
         StringBuilder jsonResponse = new StringBuilder("{");
         jsonResponse.append("\"default_state\":\"").append(stateName).append("\",");
         jsonResponse.append("\"default_city\":\"").append(defaultCity).append("\",");
         jsonResponse.append("\"cities\":[");
+
         for (int i = 0; i < cities.size(); i++) {
             jsonResponse.append("\"").append(cities.get(i)).append("\"");
             if (i < cities.size() - 1) {

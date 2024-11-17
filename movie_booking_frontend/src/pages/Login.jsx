@@ -18,7 +18,7 @@ const Login = () => {
             password,
         };
 
-        axios.post('http://your-backend-url.com/login', loginData)
+        axios.post('http://localhost:8080/movie_booking_backend/login', loginData)
             .then((response) => {
                 setSuccessMessage('Logged in successfully!');
                 setErrorMessage('');

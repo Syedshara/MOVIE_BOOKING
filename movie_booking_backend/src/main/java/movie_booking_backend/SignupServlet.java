@@ -8,11 +8,10 @@ import java.sql.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-//l
 @WebServlet("/signup")
 public class SignupServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final String JDBC_URL = "jdbc:postgresql://localhost:5433/moviebookingdb";
+    private static final String JDBC_URL = "jdbc:postgresql://localhost:5433/movieticketdb";
     private static final String JDBC_USER = "postgres";
     private static final String JDBC_PASSWORD = "vishal888";
 
@@ -23,6 +22,21 @@ public class SignupServlet extends HttpServlet {
         } catch (ClassNotFoundException e) {
             throw new ServletException("PostgreSQL Driver not found", e);
         }
+    }
+
+    // Helper method to set CORS headers
+    private void setCorsHeaders(HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        response.setHeader("Access-Control-Max-Age", "3600");
+    }
+
+    @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        setCorsHeaders(response);
+        response.setStatus(HttpServletResponse.SC_OK); // Accept preflight requests
     }
 
     // Helper method to hash the password using SHA-256
@@ -39,12 +53,10 @@ public class SignupServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+        setCorsHeaders(response);
         response.setContentType("text/plain");
 
-        // Read the request body (which is JSON as a string)
+        // Read the request body
         StringBuilder jsonInput = new StringBuilder();
         String line;
         try (BufferedReader reader = request.getReader()) {
@@ -53,8 +65,6 @@ public class SignupServlet extends HttpServlet {
             }
         }
 
-        // Extract username, email, passwordHash, and phoneNumber from the JSON body
-        // manually
         String username = null;
         String email = null;
         String password = null;
@@ -62,9 +72,8 @@ public class SignupServlet extends HttpServlet {
 
         try {
             String json = jsonInput.toString();
-            // Extract data from the raw JSON string manually
-            if (json.contains("\"username\"") && json.contains("\"email\"") && json.contains("\"password\"")
-                    && json.contains("\"phoneNumber\"")) {
+            if (json.contains("\"username\"") && json.contains("\"email\"") &&
+                    json.contains("\"password\"") && json.contains("\"phoneNumber\"")) {
                 username = json.split("\"username\"")[1].split(":")[1].split("\"")[1];
                 email = json.split("\"email\"")[1].split(":")[1].split("\"")[1];
                 password = json.split("\"password\"")[1].split(":")[1].split("\"")[1];
@@ -83,7 +92,6 @@ public class SignupServlet extends HttpServlet {
             return;
         }
 
-        // Hash the input password
         String hashedPassword = null;
         try {
             hashedPassword = hashPassword(password);
@@ -94,7 +102,6 @@ public class SignupServlet extends HttpServlet {
             return;
         }
 
-        // Insert user into the database
         try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
             String sql = "INSERT INTO Users (username, email, password_hash, phone_number, role) VALUES (?, ?, ?, ?, 'user')";
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -106,13 +113,13 @@ public class SignupServlet extends HttpServlet {
             stmt.executeUpdate();
             response.getWriter().println("User registered successfully.");
         } catch (SQLException e) {
-            if (e.getSQLState().equals("23505")) { // SQLSTATE for unique violation (duplicate key)
+            if ("23505".equals(e.getSQLState())) { // Unique constraint violation
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().println("Email already exists");
             } else {
                 e.printStackTrace();
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().println("Error: " + e.getMessage());
+                response.getWriter().println("Database error: " + e.getMessage());
             }
         }
     }

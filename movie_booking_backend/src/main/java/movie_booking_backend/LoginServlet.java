@@ -8,11 +8,10 @@ import java.sql.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-//jj
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final String JDBC_URL = "jdbc:postgresql://localhost:5433/moviebookingdb";
+    private static final String JDBC_URL = "jdbc:postgresql://localhost:5433/movieticketdb";
     private static final String JDBC_USER = "postgres";
     private static final String JDBC_PASSWORD = "vishal888";
 
@@ -23,6 +22,21 @@ public class LoginServlet extends HttpServlet {
         } catch (ClassNotFoundException e) {
             throw new ServletException("PostgreSQL Driver not found", e);
         }
+    }
+
+    // Helper method to set CORS headers
+    private void setCorsHeaders(HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+        response.setHeader("Access-Control-Max-Age", "3600");
+    }
+
+    @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        setCorsHeaders(response);
+        response.setStatus(HttpServletResponse.SC_OK); // Accept preflight requests
     }
 
     // Helper method to hash the password using SHA-256
@@ -39,12 +53,10 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+        setCorsHeaders(response);
         response.setContentType("text/plain");
 
-        // Read the request body (which is JSON as a string)
+        // Read the request body
         StringBuilder jsonInput = new StringBuilder();
         String line;
         try (BufferedReader reader = request.getReader()) {
@@ -53,13 +65,11 @@ public class LoginServlet extends HttpServlet {
             }
         }
 
-        // Extract email and password from the JSON body manually
         String email = null;
         String password = null;
 
         try {
             String json = jsonInput.toString();
-            // Extract data from the raw JSON string manually
             if (json.contains("\"email\"") && json.contains("\"password\"")) {
                 email = json.split("\"email\"")[1].split(":")[1].split("\"")[1];
                 password = json.split("\"password\"")[1].split(":")[1].split("\"")[1];
@@ -77,7 +87,6 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        // Hash the input password
         String hashedPassword = null;
         try {
             hashedPassword = hashPassword(password);
@@ -97,7 +106,6 @@ public class LoginServlet extends HttpServlet {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                // User found, check if password matches
                 String storedPasswordHash = rs.getString("password_hash");
                 if (storedPasswordHash.equals(hashedPassword)) {
                     response.getWriter().println("Login successful");
@@ -106,13 +114,13 @@ public class LoginServlet extends HttpServlet {
                     response.getWriter().println("Wrong password");
                 }
             } else {
-                // No user found with that email
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().println("No user found");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            response.getWriter().println("Error: " + e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().println("Database error: " + e.getMessage());
         }
     }
 }

@@ -20,7 +20,7 @@ const BookingPage = () => {
     useEffect(() => {
         const fetchMovieData = async () => {
             try {
-                const movieResponse = await fetch(`http://10.16.48.202:8080/movie_booking_backend/getMovie/${id}`);
+                const movieResponse = await fetch(`http://localhost:8080/movie_booking_backend/getMovie/${id}`);
                 const movie = await movieResponse.json();
                 setMovieData(movie);  // Set movie data
                 console.log(movie);
