@@ -10,7 +10,7 @@ const Main = () => {
 
     // Fetch movie data from the API
     useEffect(() => {
-        axios.get('http://localhost:8080/moviebooking/getMovies')
+        axios.get('http://localhost:8080/movie_booking_backend/getMovies')
             .then((response) => {
                 setMovies(response.data);  // Set the fetched movies into the state
             })

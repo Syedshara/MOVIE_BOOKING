@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { FaStar, FaTicketAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
+import ReactPlayer from "react-player";
 import logo from '../assets/logo/logo.png'; // Import the logo image
 
 const BookingPage = () => {
@@ -15,7 +16,7 @@ const BookingPage = () => {
     useEffect(() => {
         const fetchMovieData = async () => {
             try {
-                const movieResponse = await fetch(`http://localhost:8080/moviebooking/getMovie/${id}`);
+                const movieResponse = await fetch(`http://localhost:8080/movie_booking_backend/getMovie/${id}`);
                 const movie = await movieResponse.json();
                 setMovieData(movie);  // Set movie data
 
@@ -152,16 +153,13 @@ const BookingPage = () => {
                         {movieData.movie_name}
                     </motion.h2>
                     <div className="flex justify-center">
-                        <iframe
-                            width="560"
-                            height="315"
-                            src={movieData.trailer_url} // Using real trailer URL from backend
-                            title="YouTube video"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
+                        <ReactPlayer
+                            url={movieData.trailer_url}  // Assuming trailer_url contains a valid YouTube URL
+                            width="560px"
+                            height="315px"
                             className="rounded-lg shadow-lg"
-                        ></iframe>
+                            controls
+                        />
                     </div>
                 </motion.div>
 
