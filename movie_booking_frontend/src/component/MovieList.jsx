@@ -1,22 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import MovieCard from './MovieCard';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'; // Arrow icons
-import axios from 'axios';
 
-const MovieList = () => {
-    const [movies, setMovies] = useState([]);  // State to store fetched movies
+const MovieList = ({ movies }) => {
     const movieListRef = useRef();
-
-    // Fetch movie data from the API
-    useEffect(() => {
-        axios.get('http://localhost:8080/moviebooking/getMovies')
-            .then((response) => {
-                setMovies(response.data);  // Store the fetched movies in state
-            })
-            .catch((error) => {
-                console.error('Error fetching movie data:', error);
-            });
-    }, []);
 
     const scrollLeft = () => {
         if (movieListRef.current) {
@@ -43,7 +30,7 @@ const MovieList = () => {
             <div
                 ref={movieListRef}
                 className="overflow-x-scroll flex space-x-4 pb-4 scrollbar-hide px-10"
-                style={{ scrollPaddingLeft: '10px', scrollPaddingRight: '10px' }} // Adds padding for the slider
+                style={{ scrollPaddingLeft: '10px', scrollPaddingRight: '10px' }}
             >
                 {movies.map((movie) => (
                     <MovieCard key={movie.movie_id} movie={movie} />
