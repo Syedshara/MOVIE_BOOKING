@@ -24,7 +24,6 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    // Helper method to set CORS headers
     private void setCorsHeaders(HttpServletResponse response) {
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
@@ -36,10 +35,9 @@ public class LoginServlet extends HttpServlet {
     protected void doOptions(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         setCorsHeaders(response);
-        response.setStatus(HttpServletResponse.SC_OK); // Accept preflight requests
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 
-    // Helper method to hash the password using SHA-256
     private String hashPassword(String password) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] hashedBytes = digest.digest(password.getBytes());
@@ -54,9 +52,8 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         setCorsHeaders(response);
-        response.setContentType("text/plain");
+        response.setContentType("application/json");
 
-        // Read the request body
         StringBuilder jsonInput = new StringBuilder();
         String line;
         try (BufferedReader reader = request.getReader()) {
@@ -77,13 +74,13 @@ public class LoginServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Invalid JSON format");
+            response.getWriter().write("{\"error\":\"Invalid JSON format\"}");
             return;
         }
 
         if (email == null || password == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Missing fields");
+            response.getWriter().write("{\"error\":\"Missing fields\"}");
             return;
         }
 
@@ -93,11 +90,10 @@ public class LoginServlet extends HttpServlet {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("Error hashing password: " + e.getMessage());
+            response.getWriter().write("{\"error\":\"Error hashing password\"}");
             return;
         }
 
-        // Validate user credentials
         try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
             String sql = "SELECT * FROM Users WHERE email = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -108,19 +104,19 @@ public class LoginServlet extends HttpServlet {
             if (rs.next()) {
                 String storedPasswordHash = rs.getString("password_hash");
                 if (storedPasswordHash.equals(hashedPassword)) {
-                    response.getWriter().println("Login successful");
+                    response.getWriter().println("{\"message\":\"Login successful\"}");
                 } else {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.getWriter().println("Wrong password");
+                    response.getWriter().println("{\"error\":\"Wrong password\"}");
                 }
             } else {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().println("No user found");
+                response.getWriter().println("{\"error\":\"No user found\"}");
             }
         } catch (SQLException e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().println("Database error: " + e.getMessage());
+            response.getWriter().println("{\"error\":\"Database error\"}");
         }
     }
 }
