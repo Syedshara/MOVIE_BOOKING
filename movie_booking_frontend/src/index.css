@@ -62,3 +62,76 @@ body, html {
 
 
 
+.payment-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .payment-container {
+    background: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 30px;
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+  }
+  
+  .payment-header h2 {
+    font-size: 26px;
+    color: #333333;
+    margin-bottom: 10px;
+  }
+  
+  .payment-header p {
+    font-size: 16px;
+    color: #666666;
+    margin-bottom: 20px;
+  }
+  
+  .qr-code-container {
+    margin: 0 auto;
+    margin-bottom: 20px;
+  }
+  
+  .payment-info {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #333333;
+  }
+  
+  .amount-details {
+    margin-bottom: 20px;
+  }
+  
+  .amount {
+    font-size: 32px;
+    font-weight: bold;
+    color: #4caf50;
+  }
+  
+  .currency {
+    font-size: 18px;
+    color: #777777;
+  }
+  
+  .upi-details p {
+    font-size: 16px;
+    color: #555555;
+    margin: 10px 0;
+  }
+  
+  .payment-footer {
+    font-size: 14px;
+    color: #777777;
+    margin-top: 20px;
+  }
+  
+  .payment-footer p {
+    margin-top: 10px;
+  }
+  

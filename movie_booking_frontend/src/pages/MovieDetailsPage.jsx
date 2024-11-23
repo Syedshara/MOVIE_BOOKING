@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import logo from '../assets/logo/logo.png'; // Import the logo image
+
 
 const MovieDetailsPage = () => {
     const { id } = useParams();
@@ -9,94 +12,53 @@ const MovieDetailsPage = () => {
     const [theaterList, setTheaterList] = useState([]);
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
     const [selectedRegion, setSelectedRegion] = useState('All'); // Filter for region
-
-    const regions = ['All', 'Mumbai', 'Chembur', 'Goregaon']; // Example regions
+    const [loading, setLoading] = useState(true); // Added loading state
     const navigate = useNavigate();
 
-    const handleShowtimeClick = (time, theaterName, screenId) => {
-        // Redirect to seat selection page with screenId
-        navigate(`/seats/${screenId}`);
+    const regions = ['All', 'Mumbai', 'Chembur', 'Goregaon']; // Example regions
+
+    const handleShowtimeClick = (id, theaterName, screenId) => {
+        navigate(`/seats/${id}`);
+    };
+
+    const fetchData = async () => {
+        try {
+            // Fetch movie details
+            const movieResponse = await axios.get(`http://localhost:8080/movie_booking_backend/getMovie/${id}`);
+            const movieData = movieResponse.data;
+            setMovieDetails({
+                movie_name: movieData.movie_name,
+                genres: movieData.genre,
+                release_date: movieData.release_date.split(" ")[0], // Extract date part
+            });
+
+            // Fetch theater details
+            const theaterResponse = await axios.get(`http://localhost:8080/movie_booking_backend/getTheaterDetails?movieId=${id}`);
+            const theaterData = theaterResponse.data.map(theater => ({
+
+                theater_name: theater.theater_name,
+                address: theater.address,
+                region: 'All', // Default region since it's not provided
+                screens: theater.screens.map(screen => ({
+                    screen_id: screen.screen_id,
+                    screen_name: screen.screen_name,
+                    showtimes: screen.shows.map(show => ({
+                        time: convertTimeTo12Hour(show.show_time),
+                        id: show.show_id,
+                        available: true, // Default as true since availability is not provided
+                    }))
+                }))
+            }));
+            setTheaterList(theaterData);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setLoading(false); // End loading
+        }
     };
 
     useEffect(() => {
-        // Mocked movie details
-        setMovieDetails({
-            movie_name: 'Amaran',
-            genres: 'Action, Drama, Thriller',
-            release_date: '2024-10-24',
-        });
-
-        // Mocked theater data with screen_id included
-        setTheaterList([
-            {
-                theater_name: 'MovieMax: Huma, Kanjurmarg',
-                region: 'Mumbai',
-                screens: [
-                    {
-                        screen_id: 'screen1-huma',
-                        screen_name: 'Screen 1',
-                        showtimes: [
-                            { time: '02:30 PM', available: true },
-                            { time: '08:45 PM', available: false }
-                        ]
-                    },
-                    {
-                        screen_id: 'screen2-huma',
-                        screen_name: 'Screen 2',
-                        showtimes: [
-                            { time: '02:30 PM', available: true },
-                            { time: '08:45 PM', available: false }
-                        ]
-                    }
-                ],
-            },
-            {
-                theater_name: 'MovieMax: Sion',
-                region: 'Mumbai',
-                screens: [
-                    {
-                        screen_id: 'screen1-sion',
-                        screen_name: 'Screen 1',
-                        showtimes: [
-                            { time: '04:00 PM', available: true },
-                            { time: '08:45 PM', available: true },
-                            { time: '11:55 PM', available: false }
-                        ]
-                    }
-                ],
-            },
-            {
-                theater_name: 'Movietime Cubic Mall: Chembur',
-                region: 'Chembur',
-                screens: [
-                    {
-                        screen_id: 'screen1-chembur',
-                        screen_name: 'Screen 1',
-                        showtimes: [
-                            { time: '11:30 AM', available: true },
-                            { time: '03:00 PM', available: false },
-                            { time: '06:45 PM', available: true },
-                            { time: '07:00 PM', available: false },
-                            { time: '10:30 PM', available: true }
-                        ]
-                    }
-                ],
-            },
-            {
-                theater_name: 'MOVIE TIME: HUB, Goregaon (E)',
-                region: 'Goregaon',
-                screens: [
-                    {
-                        screen_id: 'screen1-goregaon',
-                        screen_name: 'Screen 1',
-                        showtimes: [
-                            { time: '01:10 PM', available: true },
-                            { time: '11:25 PM', available: false }
-                        ]
-                    }
-                ],
-            }
-        ]);
+        fetchData();
     }, [id]);
 
     const handleDateChange = (e) => {
@@ -107,8 +69,42 @@ const MovieDetailsPage = () => {
         setSelectedRegion(e.target.value);
     };
 
+    const convertTimeTo12Hour = (time) => {
+        const [hour, minute] = time.split(':');
+        const hourNum = parseInt(hour, 10);
+        const period = hourNum >= 12 ? 'PM' : 'AM';
+        const hour12 = hourNum % 12 || 12;
+        return `${hour12}:${minute} ${period}`;
+    };
+
     // Filter theaters based on selected region
     const filteredTheaters = selectedRegion === 'All' ? theaterList : theaterList.filter(theater => theater.region === selectedRegion);
+
+    // Loader Component
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-gray-100">
+                <motion.div
+                    className="flex flex-col items-center justify-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <div className="relative">
+                        <img
+                            src={logo}// Update with your logo path
+                            alt="Logo"
+                            className="h-20 mb-4 transform transition-transform duration-500 ease-in-out"
+                            style={{ animation: 'growShrink 2s infinite' }}
+                        />
+                        {/* Gradient white overlay */}
+                        <div className="absolute inset-0 bg-transparent opacity-50 rounded-lg"></div>
+                    </div>
+                    <p className="text-lg text-gray-500">Loading...</p>
+                </motion.div>
+            </div>
+        );
+    }
 
     return (
         <div className="container mx-auto p-6 bg-gray-100 min-h-screen">
@@ -212,28 +208,25 @@ const MovieDetailsPage = () => {
                             transition={{ duration: 0.5 }}
                         >
                             <h4 className="text-lg font-bold text-gray-700 flex items-center gap-2">
-                                {theater.theater_name}
+                                {theater.theater_name} ,<span className='text-sm -gray-400'>{theater.address}</span>
                             </h4>
                             {theater.screens.map((screen, screenIndex) => (
                                 <div key={screenIndex} className="mt-3">
                                     <h5 className="font-medium text-gray-600">{screen.screen_name}</h5>
                                     <div className="mt-2 flex gap-3 flex-wrap">
-                                        {screen.showtimes
-                                            .sort((a, b) => new Date(`1970/01/01 ${a.time}`) - new Date(`1970/01/01 ${b.time}`))
-                                            .map((showtime, timeIndex) => (
-                                                <button
-                                                    key={timeIndex}
-                                                    className={`px-4 py-2 rounded-md shadow-sm text-sm font-medium border ${showtime.available
-                                                        ? 'border-green-500 text-green-700'
-                                                        : 'border-red-500 text-red-700'
-                                                        }`}
-                                                    onClick={() => handleShowtimeClick(showtime.time, theater.theater_name, screen.screen_id)}
-                                                >
-                                                    {showtime.time}
-                                                </button>
-                                            ))}
+                                        {screen.showtimes.map((showtime, timeIndex) => (
+                                            <button
+                                                key={timeIndex}
+                                                className={`px-4 py-2 rounded-md shadow-sm text-sm font-medium border ${showtime.available
+                                                    ? 'border-green-500 text-green-700'
+                                                    : 'border-red-500 text-red-700'
+                                                    }`}
+                                                onClick={() => handleShowtimeClick(showtime.id, theater.theater_name, screen.screen_id)}
+                                            >
+                                                {showtime.time}
+                                            </button>
+                                        ))}
                                     </div>
-                                    <div className="w-1/4 border-t border-gray-300 mt-3"></div>
                                 </div>
                             ))}
                         </motion.div>

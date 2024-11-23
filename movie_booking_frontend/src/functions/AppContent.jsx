@@ -14,9 +14,14 @@ import MovieDetailsPage from '../pages/MovieDetailsPage';
 import SeatSelectionPage from '../pages/SeatSelectionPage';
 import Signup from '../pages/Signup';
 import Login from '../pages/Login';
+import PaymentPage from '../pages/PaymentPage';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
+
 
 const AppContent = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const navigate = useNavigate();
 
     const openSearchOverlay = () => {
         setIsSearchOpen(true);
@@ -24,6 +29,14 @@ const AppContent = () => {
 
     const closeSearchOverlay = () => {
         setIsSearchOpen(false);
+    };
+    const handleLogout = () => {
+        // Clear userId from localStorage or sessionStorage (depending on where it's stored)
+        Cookies.remove('userId');
+        // or sessionStorage.removeItem('userId');
+        alert("logged out")
+        // Navigate to the /main page
+        navigate('/');
     };
 
     return (
@@ -35,7 +48,7 @@ const AppContent = () => {
                 <SidebarItem icon={<Home size={20} />} text="Home" to="/" />
                 <SidebarItem icon={<IoTicketOutline size={20} />} text="MyTickets" to="/my-tickets" />
                 <SidebarItem icon={<IoSearchSharp size={20} />} text="Search" onClick={openSearchOverlay} />
-                <SidebarItem icon={<IoMdLogOut size={24} />} text="Logout" />
+                <SidebarItem icon={<IoMdLogOut size={24} />} onClick={handleLogout} text="Logout" />
             </Sidebar>
 
             {/* Main Content */}
@@ -48,6 +61,7 @@ const AppContent = () => {
                     <Route path="/seats/:screenId" element={<SeatSelectionPage />} />
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/payment" element={<PaymentPage />} />
 
                 </Routes>
             </div>

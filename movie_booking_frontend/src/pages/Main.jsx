@@ -5,6 +5,8 @@ import MovieList from '../component/MovieList';
 import logo from '../assets/logo/logo.png'; // Import the logo image
 import axios from 'axios';
 import { FaRegCircleUser } from "react-icons/fa6"; // Import user icon
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie'; //
 
 const Main = () => {
     const [movies, setMovies] = useState([]); // State to store fetched movie data
@@ -12,6 +14,16 @@ const Main = () => {
     const [cities, setCities] = useState([]); // Store unique cities
     const [selectedState, setSelectedState] = useState(''); // Selected state
     const [selectedCity, setSelectedCity] = useState(''); // Default city set to 'Coimbatore'
+    const navigate = useNavigate();
+    const [userId, setUserId] = useState('Guest');
+
+    useEffect(() => {
+        const userIdFromCookies = Cookies.get('userId'); // Get user ID from cookies
+        if (userIdFromCookies) {
+            setUserId(userIdFromCookies); // If found, update the userId state
+        }
+    }, []);
+
 
     // Fetch movie data from the API for the selected city and state
     useEffect(() => {
@@ -19,7 +31,7 @@ const Main = () => {
 
 
         // Fetching states data for the dropdown
-        axios.get('http://192.168.43.203:8080/movie_booking_backend/getStates')
+        axios.get('http://localhost:8080/movie_booking_backend/getStates')
             .then((response) => {
                 setStates(response.data);
                 setSelectedState("Tamil Nadu")
@@ -47,6 +59,11 @@ const Main = () => {
             });
 
     }, []);
+
+    const handleLogin = () => {
+        navigate("/login");
+
+    }
 
 
     useEffect(() => {
@@ -122,9 +139,9 @@ const Main = () => {
                     </select>
 
                     {/* User Icon and Greeting */}
-                    <div className="flex items-center gap-2 mr-5 ml-5">
+                    <div className="flex items-center gap-2 mr-5 ml-5" onClick={handleLogin}>
                         <FaRegCircleUser size={24} className="text-gray-600" />
-                        <span className="text-gray-600">Hi, Guest</span>
+                        <span className="text-gray-600">{`Hi, ${userId}`}</span>
                     </div>
                 </div>
             </div>

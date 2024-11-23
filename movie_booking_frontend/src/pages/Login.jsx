@@ -3,12 +3,16 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 import logo from '../assets/logo/logo.png';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie'; //
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -20,15 +24,22 @@ const Login = () => {
 
         axios.post('http://localhost:8080/movie_booking_backend/login', loginData)
             .then((response) => {
+                const userId = loginData.email; // Adjust this based on your API's response
+                Cookies.set('userId', userId, { expires: 7 }); // Set cookie to expire in 7 days
                 setSuccessMessage('Logged in successfully!');
                 setErrorMessage('');
-                // Handle redirect or token storage here
+
+                // Redirect after setting the cookie
+                setTimeout(() => {
+                    navigate('/');
+                }, 1000);
             })
             .catch((error) => {
                 setErrorMessage('Invalid credentials. Please try again.');
                 setSuccessMessage('');
             });
     };
+
 
     return (
         <div className='flex justify-center items-center min-h-screen bg-slate-50'>
@@ -95,12 +106,12 @@ const Login = () => {
                     </motion.form>
 
                     {errorMessage && (
-                        <motion.p className="text-red-500 text-sm text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
+                        <motion.p className="text-red-500 text-sm text-center mt-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
                             {errorMessage}
                         </motion.p>
                     )}
                     {successMessage && (
-                        <motion.p className="text-green-500 text-sm text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
+                        <motion.p className="text-green-500 text-sm text-center mt-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
                             {successMessage}
                         </motion.p>
                     )}
