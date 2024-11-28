@@ -17,6 +17,7 @@ import Login from '../pages/Login';
 import PaymentPage from '../pages/PaymentPage';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
+import MyTickets from '../pages/MyTickets';
 
 
 const AppContent = () => {
@@ -62,6 +63,7 @@ const AppContent = () => {
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/payment" element={<PaymentPage />} />
+                    <Route path="/my-tickets" element={<MyTickets />} />
 
                 </Routes>
             </div>

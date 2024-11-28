@@ -47,7 +47,7 @@ const PaymentPage = () => {
                 email: email
             };
 
-            fetch('http://localhost:8080/movie_booking_backend/bookSeats', {
+            fetch('http://10.16.48.202:8080/movie_booking_backend/bookSeats', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ const PaymentPage = () => {
                 .then((response) => response.json())
                 .then((data) => {
                     console.log(data);
-                    navigate('/generate-ticket'); // Replace with your actual route for the ticket page
+                    navigate('/my-tickets'); // Replace with your actual route for the ticket page
                 })
                 .catch((error) => {
                     console.error("Error processing payment:", error);
@@ -77,17 +77,6 @@ const PaymentPage = () => {
                 )}
 
                 <div className="space-y-6 mb-6">
-                    {!loading && !success && (
-                        <div className="mt-6 text-center">
-                            <p className="text-gray-600 mb-4">Scan the QR code below to pay ₹{amount} via UPI or use your UPI ID:</p>
-                            <div className="flex justify-center mb-4">
-                                <canvas ref={canvasRef} />
-                            </div>
-                            <div className="text-center text-md">
-                                (or)
-                            </div>
-                        </div>
-                    )}
 
                     <div>
                         <label htmlFor="upi-id" className="block text-sm font-medium text-gray-700">UPI ID</label>

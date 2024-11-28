@@ -18,7 +18,7 @@ const Main = () => {
     const [userId, setUserId] = useState('Guest');
 
     useEffect(() => {
-        const userIdFromCookies = Cookies.get('userId'); // Get user ID from cookies
+        const userIdFromCookies = Cookies.get('username'); // Get user ID from cookies
         if (userIdFromCookies) {
             setUserId(userIdFromCookies); // If found, update the userId state
         }
@@ -31,7 +31,7 @@ const Main = () => {
 
 
         // Fetching states data for the dropdown
-        axios.get('http://localhost:8080/movie_booking_backend/getStates')
+        axios.get('http://10.16.48.202:8080/movie_booking_backend/getStates')
             .then((response) => {
                 setStates(response.data);
                 setSelectedState("Tamil Nadu")
@@ -42,7 +42,7 @@ const Main = () => {
             });
 
         // Fetch cities data for the default state (Tamil Nadu)
-        axios.post(`http://localhost:8080/movie_booking_backend/getCities?state=${selectedState}`)
+        axios.post(`http://10.16.48.202:8080/movie_booking_backend/getCities?state=${selectedState}`)
             .then((response) => {
                 setCities(response.data.cities);
                 setSelectedCity(response.data.default_city);  // Set the default city
@@ -50,9 +50,10 @@ const Main = () => {
             .catch((error) => {
                 console.error('Error fetching cities data:', error);
             });
-        axios.get(`http://localhost:8080/movie_booking_backend/getMovies?city=${selectedCity}`)
+        axios.get(`http://10.16.48.202:8080/movie_booking_backend/getMovies?city=${selectedCity}`)
             .then((response) => {
-                setMovies(response.data);  // Set the fetched movies into the state
+                setMovies(response.data);
+                // Set the fetched movies into the state
             })
             .catch((error) => {
                 console.error('Error fetching movie data:', error);
@@ -67,7 +68,7 @@ const Main = () => {
 
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/movie_booking_backend/getMovies?city=${selectedCity}`)
+        axios.get(`http://10.16.48.202:8080/movie_booking_backend/getMovies?city=${selectedCity}`)
             .then((response) => {
                 setMovies(response.data);  // Set the fetched movies into the state
             })
@@ -83,7 +84,7 @@ const Main = () => {
         const newState = e.target.value;
         setSelectedState(newState);
 
-        axios.post(`http://localhost:8080/movie_booking_backend/getCities?state=${newState}`)
+        axios.post(`http://10.16.48.202:8080/movie_booking_backend/getCities?state=${newState}`)
             .then((response) => {
                 setCities(response.data.cities);
                 setSelectedCity(response.data.default_city);  // Reset city to default for the selected state

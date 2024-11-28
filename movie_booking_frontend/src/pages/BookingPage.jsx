@@ -5,34 +5,30 @@ import { motion } from "framer-motion";
 import ReactPlayer from "react-player";
 import logo from '../assets/logo/logo.png'; // Import the logo image
 import RatingOverlay from "../component/RatingOverlay";
+import { FaRegCircleUser } from "react-icons/fa6";
 
 const BookingPage = () => {
     const { id } = useParams();  // Fetch movie ID from URL
     const [movieData, setMovieData] = useState(null);
     const [ratings, setRatings] = useState([]);
+    const [averageRating, setAverageRating] = useState(0);
     const [loading, setLoading] = useState(true);
-    const [ratedIds, setRatedIds] = useState([]);
     const [showOverlay, setShowOverlay] = useState(false);  // State to show/hide overlay
     const [userRating, setUserRating] = useState(0);  // User rating input
     const [userReview, setUserReview] = useState("");  // User review input
 
-    // Fetch movie data and dummy ratings
+    // Fetch movie data and ratings
     useEffect(() => {
         const fetchMovieData = async () => {
             try {
-                const movieResponse = await fetch(`http://localhost:8080/movie_booking_backend/getMovie/${id}`);
+                const movieResponse = await fetch(`http://10.16.48.202:8080/movie_booking_backend/getMovie/${id}`);
                 const movie = await movieResponse.json();
                 setMovieData(movie);  // Set movie data
-                console.log(movie);
 
-                // Use dummy ratings data for now
-                const dummyRatings = [
-                    { rating_id: 1, rating_value: 8, review: "Great movie!", created_at: "2024-11-15T12:34:56Z" },
-                    { rating_id: 2, rating_value: 7, review: "Good, but could be better.", created_at: "2024-11-14T10:20:30Z" },
-                    { rating_id: 3, rating_value: 9, review: "Amazing plot and visuals.", created_at: "2024-11-13T08:15:45Z" }
-                ];
-
-                setRatings(dummyRatings);  // Set dummy ratings data
+                const ratingsResponse = await fetch(`http://10.16.48.202:8080/movie_booking_backend/getTopRatings?movieId=${id}`);
+                const ratingsData = await ratingsResponse.json();
+                setRatings(ratingsData.ratings);  // Set ratings data
+                setAverageRating(ratingsData.average);  // Set average rating
 
                 setLoading(false);  // Set loading to false once data is fetched
             } catch (error) {
@@ -123,8 +119,8 @@ const BookingPage = () => {
                             <div className="flex gap-3">
                                 <div className="flex items-center">
                                     <FaStar className="text-yellow-500 mr-1" />
-                                    <span className="text-lg font-bold">{movieData.rating}/10</span>
-                                    <span className="text-gray-500 text-xs md:text-sm ml-2">({movieData.votes} Votes)</span>
+                                    <span className="text-lg font-bold">{averageRating.toFixed(2)}/10</span>
+                                    <span className="text-gray-500 text-xs md:text-sm ml-2">({ratings.length} Ratings)</span>
                                 </div>
                                 <button
                                     className="ml-auto px-4 py-2 rounded 
@@ -197,6 +193,47 @@ const BookingPage = () => {
                         />
                     </div>
                 </motion.div>
+
+                {/* Ratings Section */}
+                <motion.div
+                    className="container mx-auto p-6 mt-6"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <h2 className="text-2xl font-bold mb-4">User Ratings</h2>
+                    <div className="space-y-4">
+                        {ratings.map((rating) => (
+                            <motion.div
+                                key={rating.rating_id}
+                                className="bg-white p-4 rounded shadow"
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.7 }}
+                            >
+                                <div className="flex items-center justify-between mb-2 mx-2">
+                                    <div className="flex gap-2">
+                                        <span>
+                                            <FaRegCircleUser size={24}></FaRegCircleUser>
+                                        </span>
+
+                                        <p className="text-gray-600 text-md font-semibold">{rating.username}</p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex items-center">
+                                            <FaStar className="text-yellow-500 mr-1" />
+                                            <span className="text-lg font-bold">{rating.rating_value}/5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-between mb-2 mx-2">
+                                    <p className="text-gray-700 font-light ml-6">-  {rating.review}</p>
+                                    <span className="text-gray-500 text-xs ml-2">{new Date(rating.created_at).toLocaleDateString()}</span>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </motion.div>
             </div>
 
             <RatingOverlay
@@ -207,8 +244,8 @@ const BookingPage = () => {
                 userReview={userReview}
                 setUserReview={setUserReview}
                 handleRate={handleRate}
+                movieId={id}
             />
-
         </div>
     );
 };

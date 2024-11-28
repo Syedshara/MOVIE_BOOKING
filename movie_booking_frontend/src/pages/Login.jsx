@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 import logo from '../assets/logo/logo.png';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie'; //
+import Cookies from 'js-cookie';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -14,6 +14,15 @@ const Login = () => {
 
     const navigate = useNavigate();
 
+    // Check if the user is already logged in
+    useEffect(() => {
+        const userId = Cookies.get('userId');
+        if (userId) {
+            // If user is already logged in, redirect to home page
+            navigate('/');
+        }
+    }, [navigate]);
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -22,10 +31,21 @@ const Login = () => {
             password,
         };
 
-        axios.post('http://localhost:8080/movie_booking_backend/login', loginData)
+        axios.post('http://10.16.48.202:8080/movie_booking_backend/login', loginData)
             .then((response) => {
-                const userId = loginData.email; // Adjust this based on your API's response
-                Cookies.set('userId', userId, { expires: 7 }); // Set cookie to expire in 7 days
+                const data = response.data;
+                console.log(data);
+                const userId = data.userId;
+                const email = data.email;
+                const user = data.username;
+
+                // Adjust this based on your API's response
+                Cookies.set('userId', userId, { expires: 1 }); // Cookie expires in 7 days
+                Cookies.set('email', email, { expires: 1 });
+                Cookies.set('username', user, { expires: 1 });
+
+
+                // Set cookie to expire in 7 days
                 setSuccessMessage('Logged in successfully!');
                 setErrorMessage('');
 

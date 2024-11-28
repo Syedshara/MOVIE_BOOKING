@@ -24,7 +24,7 @@ const MovieDetailsPage = () => {
     const fetchData = async () => {
         try {
             // Fetch movie details
-            const movieResponse = await axios.get(`http://localhost:8080/movie_booking_backend/getMovie/${id}`);
+            const movieResponse = await axios.get(`http://10.16.48.202:8080/movie_booking_backend/getMovie/${id}`);
             const movieData = movieResponse.data;
             setMovieDetails({
                 movie_name: movieData.movie_name,
@@ -33,7 +33,7 @@ const MovieDetailsPage = () => {
             });
 
             // Fetch theater details
-            const theaterResponse = await axios.get(`http://localhost:8080/movie_booking_backend/getTheaterDetails?movieId=${id}`);
+            const theaterResponse = await axios.get(`http://10.16.48.202:8080/movie_booking_backend/getTheaterDetails?movieId=${id}`);
             const theaterData = theaterResponse.data.map(theater => ({
 
                 theater_name: theater.theater_name,

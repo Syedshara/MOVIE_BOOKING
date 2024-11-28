@@ -17,7 +17,7 @@ const SeatSelectionPage = () => {
     useEffect(() => {
         // Fetch data from the API
         console.log(screenId);
-        fetch(`http://localhost:8080/movie_booking_backend/getSeatAvailability?showId=${screenId}`)
+        fetch(`http://10.16.48.202:8080/movie_booking_backend/getSeatAvailability?showId=${screenId}`)
             .then((response) => response.json())
             .then((data) => {
                 const { theater_name, address, movie_name, seats, gold_rows, gold_columns, silver_rows, silver_columns } = data;
@@ -122,7 +122,7 @@ const SeatSelectionPage = () => {
 
     const handlePayNow = () => {
 
-        const userId = Cookies.get('userId');
+        const userId = Cookies.get('email');
         if (!userId) {
             alert('Please log in to proceed with the payment.');
             navigate('/login');
